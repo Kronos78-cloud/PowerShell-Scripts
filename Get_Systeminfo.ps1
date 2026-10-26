@@ -25,3 +25,13 @@ Write-Host "Total Memory : $($os.TotalVisibleMemorySize) KB"
 $drives | Format-Table -AutoSize
 
 $stoppedServices | Format-Table -AutoSize
+
+foreach ($drive in $drives) {
+    $freeGB = [math]::Round($drive.Free / 1GB, 2)
+    if ($freeGB -lt 10) {
+        Write-Host "Drive $($drive.Name) Free Space: $freeGB GB ***LOW DISK SPACE***"
+    }
+    else {
+        Write-Host "Drive $($drive.Name) Free Space: $freeGB GB"
+    }
+}
