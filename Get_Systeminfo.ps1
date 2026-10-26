@@ -6,12 +6,14 @@
 # =================================================================================
 
 # --Variables--
-$computerName = "POWERSHELL"
-$currentUser = "Administrator"
+$computerName = $env:COMPUTERNAME
+$currentUser = $env:USERNAME
 $today = Get-Date -Format "dd/MM/yyyy HH:mm"
 $os = Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object Caption, LastBootUpTime, TotalVisibleMemorySize
 $drives = Get-PSDrive | Where-Object {$_.Provider -like "*FileSystem*"} | Select-Object Name, Used, Free
 $stoppedServices = Get-Service | Where-Object {$_.Status -eq "Stopped"} | Select-Object Name, Status
+
+$totalMemoryGB = [math]::Round($os.TotalVisibleMemorySize / 1MB, 2)
 
 # --Display the Information--
 Write-Host "Server Name : $computerName"
@@ -20,7 +22,7 @@ Write-Host "Report Time : $today"
 
 Write-Host "Operating System : $($os.Caption)"
 Write-Host "Last Rebooted : $($os.LastBootUpTime)"
-Write-Host "Total Memory : $($os.TotalVisibleMemorySize) KB"
+Write-Host "Total Memory : $totalMemoryGB GB" -ForegroundColor Green
 
 $drives | Format-Table -AutoSize
 
@@ -35,3 +37,12 @@ foreach ($drive in $drives) {
         Write-Host "Drive $($drive.Name) Free Space: $freeGB GB"
     }
 }
+
+
+Write-Host ""
+Write-Host "===========================================" -ForegroundColor Cyan
+Write-Host "Report Generated : $today" -ForegroundColor DarkGreen
+Write-Host "Run on           : $computerName" -ForegroundColor DarkGreen
+Write-Host "===========================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Script completed successfully." -ForegroundColor Green
